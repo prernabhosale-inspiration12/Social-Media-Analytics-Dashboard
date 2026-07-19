@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}
+Post Details
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-info text-white">
+
+            <h3>
+
+                👁 Post Details
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if post.image %}
+
+                <div class="text-center mb-4">
+
+                    <img
+                        src="{{ post.image.url }}"
+                        class="img-fluid rounded shadow"
+                        style="max-height:400px;">
+
+                </div>
+
+            {% endif %}
+
+            <table class="table table-bordered">
+
+                <tr>
+
+                    <th width="200">
+
+                        Caption
+
+                    </th>
+
+                    <td>
+
+                        {{ post.caption }}
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+
+                        Department
+
+                    </th>
+
+                    <td>
+
+                        {{ post.department.department_name }}
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+
+                        User
+
+                    </th>
+
+                    <td>
+
+                        {{ post.user.username }}
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+
+                        Created
+
+                    </th>
+
+                    <td>
+
+                        {{ post.created_at }}
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+
+                        Updated
+
+                    </th>
+
+                    <td>
+
+                        {{ post.updated_at }}
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+            <a
+                href="{% url 'edit_post' post.id %}"
+                class="btn btn-warning">
+
+                ✏ Edit
+
+            </a>
+
+            <a
+                href="{% url 'post_list' %}"
+                class="btn btn-secondary">
+
+                ⬅ Back
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

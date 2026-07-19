@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}ML Prediction{% endblock %}
+
+{% block content %}
+
+<style>
+.predict-wrapper {
+    max-width: 700px;
+    margin: auto;
+}
+
+.predict-card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,.1);
+}
+
+.hero {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    text-align: center;
+    padding: 18px;
+}
+
+.hero h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.hero p {
+    margin-top: 6px;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.form-label {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-control {
+    height: 40px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.predict-btn {
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    padding: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.predict-btn:hover {
+    background: #1d4ed8;
+}
+
+.result-card {
+    margin-top: 18px;
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+    background: #f9fafb;
+}
+
+.result-card h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 8px 0;
+}
+
+.result-card h4 {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.result-card p {
+    font-size: 13px;
+    margin: 0;
+}
+
+.history-card {
+    margin-top: 25px;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,.1);
+}
+
+.history-card .card-header {
+    background: #2563eb;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 10px;
+}
+
+.table th, .table td {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 13px;
+}
+
+.badge {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+</style>
+
+<div class="predict-wrapper">
+    <div class="card predict-card">
+        <div class="hero">
+            <h3>🤖 Post Popularity Prediction</h3>
+            <p>Predict whether your post will get <strong>High</strong>, <strong>Medium</strong>, or <strong>Low</strong> engagement.</p>
+        </div>
+
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">👍 Likes</label>
+                    <input type="number" name="likes" class="form-control" placeholder="Enter total likes" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">💬 Comments</label>
+                    <input type="number" name="comments" class="form-control" placeholder="Enter total comments" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">🔁 Shares</label>
+                    <input type="number" name="shares" class="form-control" placeholder="Enter total shares" required>
+                </div>
+
+                <button type="submit" class="predict-btn">🚀 Predict Engagement</button>
+            </form>
+
+            {% if prediction %}
+                <div class="result-card">
+                    <h4>🎉 Prediction Result</h4>
+                    {% if prediction == "High" %}
+                        <h2 class="text-success">🟢 HIGH ENGAGEMENT</h2>
+                        <p>Excellent! Strong engagement expected.</p>
+                    {% elif prediction == "Medium" %}
+                        <h2 class="text-warning">🟡 MEDIUM ENGAGEMENT</h2>
+                        <p>Good engagement. Optimize caption or timing.</p>
+                    {% elif prediction == "Low" %}
+                        <h2 class="text-danger">🔴 LOW ENGAGEMENT</h2>
+                        <p>Low engagement predicted. Improve content quality.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if history %}
+    <div class="card history-card">
+        <div class="card-header">📜 Prediction History</div>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-primary">
+                    <tr>
+                        <th>👍 Likes</th>
+                        <th>💬 Comments</th>
+                        <th>🔁 Shares</th>
+                        <th>Prediction</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in history %}
+                    <tr>
+                        <td>{{ item.likes }}</td>
+                        <td>{{ item.comments }}</td>
+                        <td>{{ item.shares }}</td>
+                        <td>
+                            {% if item.prediction == "High" %}
+                                <span class="badge bg-success">🟢 High</span>
+                            {% elif item.prediction == "Medium" %}
+                                <span class="badge bg-warning text-dark">🟡 Medium</span>
+                            {% else %}
+                                <span class="badge bg-danger">🔴 Low</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.created_at|date:"d M Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

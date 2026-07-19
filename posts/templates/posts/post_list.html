@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}
+Posts
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>📝 Post Management</h2>
+
+        <a href="{% url 'add_post' %}" class="btn btn-primary">
+            ➕ Add Post
+        </a>
+
+    </div>
+
+    <!-- Success Message -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show">
+
+                {{ message }}
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+                </button>
+
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Search -->
+    <form method="GET" class="mb-4">
+
+        <div class="input-group">
+
+            <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Search by Caption, Department or User..."
+                value="{{ search }}">
+
+            <button class="btn btn-success" type="submit">
+                🔍 Search
+            </button>
+
+        </div>
+
+    </form>
+
+    <!-- Table -->
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Caption</th>
+                        <th>Department</th>
+                        <th>User</th>
+                        <th>Created</th>
+                        <th width="250">Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for post in posts %}
+
+                    <tr>
+
+                        <td>{{ post.id }}</td>
+
+                        <td>
+
+                            {% if post.image %}
+
+                                <img
+                                    src="{{ post.image.url }}"
+                                    class="img-thumbnail"
+                                    style="width:80px;height:80px;object-fit:cover;">
+
+                            {% else %}
+
+                                <span class="text-muted">No Image</span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>{{ post.caption|truncatechars:40 }}</td>
+
+                        <td>{{ post.department.department_name }}</td>
+
+                        <td>{{ post.user.username }}</td>
+
+                        <td>{{ post.created_at|date:"d M Y" }}</td>
+
+                        <td>
+
+                            <a
+                                href="{% url 'post_detail' post.id %}"
+                                class="btn btn-info btn-sm">
+
+                                👁 View
+
+                            </a>
+
+                            <a
+                                href="{% url 'edit_post' post.id %}"
+                                class="btn btn-warning btn-sm">
+
+                                ✏ Edit
+
+                            </a>
+
+                            <button
+                                class="btn btn-danger btn-sm"
+                                onclick="deletePost('{% url 'delete_post' post.id %}')">
+
+                                🗑 Delete
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="7" class="text-center text-danger">
+
+                            No Posts Found
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Pagination -->
+    {% if posts.has_other_pages %}
+
+    <nav class="mt-4">
+
+        <ul class="pagination justify-content-center">
+
+            {% if posts.has_previous %}
+
+                <li class="page-item">
+
+                    <a class="page-link"
+                       href="?page={{ posts.previous_page_number }}&search={{ search }}">
+
+                        Previous
+
+                    </a>
+
+                </li>
+
+            {% endif %}
+
+            <li class="page-item active">
+
+                <span class="page-link">
+
+                    {{ posts.number }}
+
+                </span>
+
+            </li>
+
+            {% if posts.has_next %}
+
+                <li class="page-item">
+
+                    <a class="page-link"
+                       href="?page={{ posts.next_page_number }}&search={{ search }}">
+
+                        Next
+
+                    </a>
+
+                </li>
+
+            {% endif %}
+
+        </ul>
+
+    </nav>
+
+    {% endif %}
+
+</div>
+
+<script>
+
+function deletePost(url){
+
+    Swal.fire({
+
+        title:"Delete Post?",
+
+        text:"This action cannot be undone!",
+
+        icon:"warning",
+
+        showCancelButton:true,
+
+        confirmButtonColor:"#d33",
+
+        cancelButtonColor:"#3085d6",
+
+        confirmButtonText:"Delete",
+
+        cancelButtonText:"Cancel"
+
+    }).then((result)=>{
+
+        if(result.isConfirmed){
+
+            window.location.href = url;
+
+        }
+
+    });
+
+}
+
+</script>
+
+{% endblock %}

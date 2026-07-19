@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Post
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3>
+
+                ➕ Add New Post
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Department
+
+                    </label>
+
+                    {{ form.department }}
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Caption
+
+                    </label>
+
+                    {{ form.caption }}
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Upload Image
+
+                    </label>
+
+                    {{ form.image }}
+
+                </div>
+
+                <button type="submit"
+                        class="btn btn-success">
+
+                    💾 Save Post
+
+                </button>
+
+                <a href="{% url 'post_list' %}"
+                   class="btn btn-secondary">
+
+                    Cancel
+
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

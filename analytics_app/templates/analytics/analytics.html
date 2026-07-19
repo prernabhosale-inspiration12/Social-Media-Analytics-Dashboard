@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<h2 class="mb-4">
+📊 Social Media Analytics Dashboard
+</h2>
+
+<div class="row">
+
+<div class="col-md-3">
+
+<div class="card bg-primary text-white shadow">
+
+<div class="card-body">
+
+<h5>Total Posts</h5>
+
+<h2>{{ total_posts }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card bg-success text-white shadow">
+
+<div class="card-body">
+
+<h5>Total Likes</h5>
+
+<h2>{{ total_likes }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card bg-warning text-dark shadow">
+
+<div class="card-body">
+
+<h5>Total Comments</h5>
+
+<h2>{{ total_comments }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card bg-danger text-white shadow">
+
+<div class="card-body">
+
+<h5>Departments</h5>
+
+<h2>{{ total_departments }}</h2>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<hr class="my-5">
+
+<div class="card shadow">
+
+<div class="card-header">
+
+📈 Engagement Chart
+
+</div>
+
+<div class="card-body">
+
+<canvas id="engagementChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const ctx = document.getElementById('engagementChart');
+
+new Chart(ctx, {
+
+type:'bar',
+
+data:{
+
+labels:[
+'Posts',
+'Likes',
+'Comments',
+'Departments'
+],
+
+datasets:[{
+
+label:'Social Media Analytics',
+
+data:[
+{{ total_posts }},
+{{ total_likes }},
+{{ total_comments }},
+{{ total_departments }}
+],
+
+backgroundColor:[
+'#0d6efd',
+'#198754',
+'#ffc107',
+'#dc3545'
+]
+
+}]
+
+},
+
+options:{
+responsive:true
+}
+
+});
+
+</script>
+
+{% endblock %}

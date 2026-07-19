@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}
+Departments
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Page Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            🏢 Department Management
+        </h2>
+
+        <a href="{% url 'add_department' %}" class="btn btn-primary">
+
+            ➕ Add Department
+
+        </a>
+
+    </div>
+
+    <!-- Success Messages -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+</div>
+    <!-- Search Box -->
+
+    <form method="GET" class="mb-4">
+
+        <div class="input-group">
+
+            <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Search by Name, Code or Description..."
+                value="{{ search }}"
+            >
+
+            <button class="btn btn-success" type="submit">
+
+                🔍 Search
+
+            </button>
+
+        </div>
+
+    </form>
+
+    <!-- Department Table -->
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Department</th>
+                        <th>Code</th>
+                        <th>Description</th>
+                        <th width="240">Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for department in departments %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ department.id }}
+
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'department_detail' department.id %}">
+
+                                {{ department.department_name }}
+
+                            </a>
+
+                        </td>
+
+                        <td>
+
+                            {{ department.department_code }}
+
+                        </td>
+
+                        <td>
+
+                            {{ department.description }}
+
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'department_detail' department.id %}"
+                               class="btn btn-info btn-sm">
+
+                                👁 View
+
+                            </a>
+
+                            <a href="{% url 'edit_department' department.id %}"
+                               class="btn btn-warning btn-sm">
+
+                                ✏ Edit
+
+                            </a>
+
+                            <a href="#"
+                               class="btn btn-danger btn-sm"
+                               onclick="deleteDepartment('{% url 'delete_department' department.id %}')">
+
+                                🗑 Delete
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="5" class="text-center text-danger">
+
+                            No Departments Found
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Pagination -->
+
+{% if departments.paginator.num_pages > 1 %}
+
+<nav class="mt-4">
+
+    <ul class="pagination justify-content-center">
+
+        {% if departments.has_previous %}
+
+            <li class="page-item">
+
+                <a class="page-link"
+                   href="?page=1&search={{ search }}">
+
+                    First
+
+                </a>
+
+            </li>
+
+            <li class="page-item">
+
+                <a class="page-link"
+                   href="?page={{ departments.previous_page_number }}&search={{ search }}">
+
+                    Previous
+
+                </a>
+
+            </li>
+
+        {% endif %}
+
+        <li class="page-item active">
+
+            <span class="page-link">
+
+                {{ departments.number }}
+
+            </span>
+
+        </li>
+
+        {% if departments.has_next %}
+
+            <li class="page-item">
+
+                <a class="page-link"
+                   href="?page={{ departments.next_page_number }}&search={{ search }}">
+
+                    Next
+
+                </a>
+
+            </li>
+
+            <li class="page-item">
+
+                <a class="page-link"
+                   href="?page={{ departments.paginator.num_pages }}&search={{ search }}">
+
+                    Last
+
+                </a>
+
+            </li>
+
+        {% endif %}
+
+    </ul>
+
+</nav>
+
+{% endif %}
+</div>
+
+<!-- SweetAlert Delete -->
+
+<script>
+
+function deleteDepartment(url){
+
+    Swal.fire({
+
+        title: "Delete Department?",
+
+        text: "This action cannot be undone!",
+
+        icon: "warning",
+
+        showCancelButton: true,
+
+        confirmButtonColor: "#d33",
+
+        cancelButtonColor: "#3085d6",
+
+        confirmButtonText: "Yes, Delete",
+
+        cancelButtonText: "Cancel"
+
+    }).then((result)=>{
+
+        if(result.isConfirmed){
+
+            window.location.href = url;
+
+        }
+
+    });
+
+}
+
+</script>
+
+{% endblock %}

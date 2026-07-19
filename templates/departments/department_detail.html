@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}
+Department Details
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3>🏢 Department Details</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered">
+
+                <tr>
+                    <th width="220">Department Name</th>
+                    <td>{{ department.department_name }}</td>
+                </tr>
+
+                <tr>
+                    <th>Department Code</th>
+                    <td>{{ department.department_code }}</td>
+                </tr>
+
+                <tr>
+                    <th>Description</th>
+                    <td>{{ department.description }}</td>
+                </tr>
+
+            </table>
+
+            <a href="{% url 'department_list' %}"
+               class="btn btn-secondary">
+
+                ← Back
+
+            </a>
+
+            <a href="{% url 'edit_department' department.id %}"
+               class="btn btn-warning">
+
+                ✏ Edit
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

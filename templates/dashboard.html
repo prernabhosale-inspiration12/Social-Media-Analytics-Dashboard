@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<h1>Welcome Admin 👋</h1>
+<div class="mb-3">
+
+    <a href="/reports/pdf/" class="btn btn-danger">
+
+        <i class="fas fa-file-pdf"></i>
+
+        Download PDF Report
+
+    </a>
+
+</div>
+<a href="/reports/excel/" class="btn btn-success ms-2">
+
+    <i class="fas fa-file-excel"></i>
+
+    Download Excel
+
+</a>
+<form method="GET" class="row mb-4">
+
+    <div class="col-md-5">
+
+        <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="🔍 Search by caption or username"
+            value="{{ search }}">
+
+    </div>
+
+    <div class="col-md-4">
+
+        <select
+            name="department"
+            class="form-select">
+
+            <option value="">All Departments</option>
+
+            {% for dept in departments %}
+
+                <option
+                    value="{{ dept.id }}"
+                    {% if request.GET.department == dept.id|stringformat:"s" %}
+                        selected
+                    {% endif %}>
+
+                    {{ dept.department_name }}
+
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <button
+            type="submit"
+            class="btn btn-primary w-100">
+
+            <i class="fas fa-search"></i>
+
+            Search
+
+        </button>
+
+    </div>
+
+</form>
+
+<!-- Statistics Cards -->
+<div class="cards">
+    <div class="card users-card">
+        <i class="fas fa-users"></i>
+        <h3>Total Users</h3>
+        <p class="counter" data-target="{{ users }}">0</p>
+    </div>
+    <div class="card posts-card">
+        <i class="fas fa-image"></i>
+        <h3>Total Posts</h3>
+        <p class="counter" data-target="{{ posts }}">0</p>
+    </div>
+    <div class="card likes-card">
+        <i class="fas fa-heart"></i>
+        <h3>Total Likes</h3>
+        <p class="counter" data-target="{{ likes }}">0</p>
+    </div>
+    <div class="card comments-card">
+        <i class="fas fa-comments"></i>
+        <h3>Total Comments</h3>
+        <p class="counter" data-target="{{ comments }}">0</p>
+    </div>
+</div>
+
+
+<!-- Bar Chart -->
+<div class="chart-container">
+    <div class="chart-card">
+        <h2>📊 Department Analytics</h2>
+        <div style="height:400px;">
+            <canvas id="departmentChart"></canvas>
+        </div>
+    </div>
+</div>
+<form method="GET" class="row mb-4">
+
+    <div class="col-md-5">
+        <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Search user or caption..."
+            value="{{ request.GET.search }}">
+    </div>
+
+    <div class="col-md-4">
+        <select
+            name="department"
+            class="form-select">
+
+            <option value="">All Departments</option>
+
+            {% for dept in departments %}
+                <option
+                    value="{{ dept.id }}"
+                    {% if request.GET.department == dept.id|stringformat:"s" %}
+                        selected
+                    {% endif %}
+                >
+                    {{ dept.department_name }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <div class="col-md-3">
+
+        <button class="btn btn-primary w-100">
+
+            Search
+
+        </button>
+
+    </div>
+
+</form>
+<!-- Recent Posts -->
+<div class="table-card">
+    <h2>📝 Recent Posts</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Department</th>
+                <th>Caption</th>
+                <th>❤️ Likes</th>
+                <th>💬 Comments</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for post in recent_posts %}
+            <tr>
+                <td><i class="fas fa-user-circle"></i> {{ post.user }}</td>
+                <td>{{ post.department }}</td>
+                <td>{{ post.caption }}</td>
+                <td>{{ post.likes }}</td>
+                <td>{{ post.comments }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Top Users -->
+<div class="top-users-card">
+    <h2>🏆 Top Active Users</h2>
+    {% for user in top_users %}
+    <div class="user-item">
+        <div class="user-header">
+            <div>
+                {% if forloop.counter == 1 %}
+                    🥇
+                {% elif forloop.counter == 2 %}
+                    🥈
+                {% else %}
+                    🥉
+                {% endif %}
+                <strong>{{ user.name }}</strong>
+            </div>
+            <span>{{ user.posts }} Posts</span>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" style="width: {{ user.progress }}%;"></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Department Pie Chart -->
+<div class="chart-container">
+    <div class="chart-card">
+        <h2>🥧 Department Distribution</h2>
+        <div style="height:400px;">
+            <canvas id="departmentPieChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Monthly Activity -->
+<div class="chart-container">
+    <div class="chart-card">
+        <h2>📈 Monthly Posts Activity</h2>
+        <div style="height:400px;">
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+</div>
+
+{{ department_names|json_script:"dept_names" }}
+{{ department_posts|json_script:"dept_posts" }}
+{{ months|json_script:"months" }}
+{{ monthly_posts|json_script:"monthly_posts" }}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const deptNames = JSON.parse(document.getElementById("dept_names").textContent);
+const deptPosts = JSON.parse(document.getElementById("dept_posts").textContent);
+const months = JSON.parse(document.getElementById("months").textContent);
+const monthlyPosts = JSON.parse(document.getElementById("monthly_posts").textContent);
+
+// Bar Chart
+const ctx = document.getElementById("departmentChart");
+new Chart(ctx, {
+    type: "bar",
+    data: {
+        labels: deptNames,
+        datasets: [{
+            label: "Department Posts",
+            data: deptPosts,
+            backgroundColor: ["#2563eb","#22c55e","#ef4444","#a855f7","#f59e0b","#06b6d4"],
+            hoverBackgroundColor: ["#1d4ed8","#16a34a","#dc2626","#9333ea","#d97706","#0891b2"],
+            borderRadius: 18,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 2000, easing: "easeOutBounce" },
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1, color: "#64748b" }, grid: { color: "#e2e8f0" } },
+            x: { ticks: { color: "#475569" }, grid: { display: false } }
+        }
+    }
+});
+
+// Pie Chart
+const pieCtx = document.getElementById("departmentPieChart");
+new Chart(pieCtx, {
+    type: "pie",
+    data: {
+        labels: deptNames,
+        datasets: [{
+            data: deptPosts,
+            backgroundColor: ["#2563eb","#22c55e","#ef4444","#a855f7","#f59e0b","#06b6d4"],
+            hoverOffset: 15
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: "bottom" } },
+        animation: { animateRotate: true, duration: 1800 }
+    }
+});
+
+// Line Chart
+const lineCtx = document.getElementById("lineChart");
+new Chart(lineCtx, {
+    type: "line",
+    data: {
+        labels: months,
+        datasets: [{
+            label: "Posts",
+            data: monthlyPosts,
+            borderColor: "#2563eb",
+            backgroundColor: "rgba(37,99,235,0.15)",
+            fill: true,
+            tension: 0.4,
+            pointRadius: 6,
+            pointBackgroundColor: "#2563eb"
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 1800 },
+        plugins: { legend: { display: true, position: "top" } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+</script>
+{% endblock %}

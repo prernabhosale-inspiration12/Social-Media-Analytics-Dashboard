@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}
+Comments
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>💬 Comment Management</h2>
+
+        <a href="{% url 'add_comment' %}" class="btn btn-primary">
+            ➕ Add Comment
+        </a>
+
+    </div>
+
+    <form method="GET" class="mb-3">
+
+        <div class="input-group">
+
+            <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Search User, Post or Comment..."
+                value="{{ search }}">
+
+            <button class="btn btn-success">
+                🔍 Search
+            </button>
+
+        </div>
+
+    </form>
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <table class="table table-hover table-bordered">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Post</th>
+                        <th>Comment</th>
+                        <th>Commented At</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for comment in comments %}
+
+                    <tr>
+
+                        <td>{{ comment.id }}</td>
+
+                        <td>{{ comment.user.username }}</td>
+
+                        <td>{{ comment.post.caption|truncatechars:30 }}</td>
+
+                        <td>{{ comment.comment|truncatechars:50 }}</td>
+
+                        <td>{{ comment.commented_at }}</td>
+
+                        <td>
+
+                            <a href="#" class="btn btn-danger btn-sm">
+                                Delete
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="6" class="text-center">
+
+                            No Comments Found
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% if comments.has_other_pages %}
+
+            <nav>
+
+                <ul class="pagination justify-content-center">
+
+                    {% if comments.has_previous %}
+
+                    <li class="page-item">
+
+                        <a class="page-link"
+                           href="?page={{ comments.previous_page_number }}&search={{ search }}">
+
+                            Previous
+
+                        </a>
+
+                    </li>
+
+                    {% endif %}
+
+                    {% for num in comments.paginator.page_range %}
+
+                    <li class="page-item {% if comments.number == num %}active{% endif %}">
+
+                        <a class="page-link"
+                           href="?page={{ num }}&search={{ search }}">
+
+                            {{ num }}
+
+                        </a>
+
+                    </li>
+
+                    {% endfor %}
+
+                    {% if comments.has_next %}
+
+                    <li class="page-item">
+
+                        <a class="page-link"
+                           href="?page={{ comments.next_page_number }}&search={{ search }}">
+
+                            Next
+
+                        </a>
+
+                    </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </nav>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
